@@ -84,7 +84,7 @@ const syncPath = async (src, action) => {
 			} else {
 				await unlinkSync(dst);
 			}
-			spinner.succeed(`${relativePath} removed`);
+			spinner.succeed(`${relativePath} removed ${new Date()}`);
 		} catch (e) {
 			spinner.fail(`Failed to remove ${relativePath}`);
 			console.log(e)
