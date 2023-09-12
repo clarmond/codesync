@@ -41,43 +41,11 @@ const syntax = (exit = true) => {
 	if (exit) process.exit();
 }
 
-// console.clear();
-
-// Check for valid arguments.  Print syntax if necessary.
-if (process.argv.length < 4) {
-	syntax();
-}
-
-// Read arguments and verify
-const parsePath = (path) => {
-	const lastChar = path.charAt(path.length - 1);
-	if (lastChar === sep) return path;
-	return path + sep;
-}
-const dir2watch = parsePath(process.argv[2]);
-const destdir = parsePath(process.argv[3]);
-
-if (isDirectory(dir2watch) === false) {
-	syntax(false);
-	error(`${dir2watch} not found or is not a directory`);
-}
-if (isDirectory(destdir) === false) {
-	syntax(false);
-	error(`${destdir} not found or is not a directory`);
-}
-
-// const spinner = ora({
-// 	text: `Synching ${dir2watch}...`,
-// 	color: 'green',
-// 	spinner: 'circleHalves',
-// 	interval: 200,
-// }).start();
-
-// Start watching for changes
-const watcher = chokidar.watch(dir2watch, {ignored: /^\./, persistent: true, ignoreInitial: true});
-
-console.log(chalk.yellowBright(`Monitoring ${dir2watch} for changes\n`));
-
+/**
+ * Copies file or directory to destination
+ * @param {String} src Path of file or dir to sync
+ * @param {String} action 'copy' or 'delete'
+ */
 const syncPath = async (src, action) => {
 	const relativePath = src.replace(dir2watch, '');
 	const dst = src.replace(dir2watch, destdir);
@@ -123,6 +91,37 @@ const syncPath = async (src, action) => {
 		}
 	}
 }
+
+// console.clear();
+
+// Check for valid arguments.  Print syntax if necessary.
+if (process.argv.length < 4) {
+	syntax();
+}
+
+// Read arguments and verify
+const parsePath = (path) => {
+	const lastChar = path.charAt(path.length - 1);
+	if (lastChar === sep) return path;
+	return path + sep;
+}
+const dir2watch = parsePath(process.argv[2]);
+const destdir = parsePath(process.argv[3]);
+
+if (isDirectory(dir2watch) === false) {
+	syntax(false);
+	error(`${dir2watch} not found or is not a directory`);
+}
+if (isDirectory(destdir) === false) {
+	syntax(false);
+	error(`${destdir} not found or is not a directory`);
+}
+
+
+// Start watching for changes
+const watcher = chokidar.watch(dir2watch, {ignored: /^\./, persistent: true, ignoreInitial: true});
+
+console.log(chalk.yellowBright(`Monitoring ${dir2watch} for changes\n`));
 
 watcher
 	.on('add', (path) => syncPath(path, 'copy'))
