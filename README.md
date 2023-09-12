@@ -22,7 +22,7 @@ For example:
 
 `npm start C:\Users\dillinger\mcp\src \\encom\mcp\src`
 
-`npm start ~/apps/my-code /Volumes/mounts/dev-area`
+`npm start /Users/abradley/tron /Volumes/tron`
 
 ## Notes
 This is a _one-way_ sync.  Changes made on the target folder will _not_ be reflected back on the source folder.
@@ -32,7 +32,7 @@ It's recommended that you create a bat file or shell script (depending on your e
 ```
 #!/bin/bash
 cd ~/codesync
-npm start ~/my-code /Volumes/mounts/dev-area
+npm start ~/my-code /Volumes/dev-area
 ```
 
 ## License
