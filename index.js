@@ -119,7 +119,11 @@ if (isDirectory(destdir) === false) {
 
 
 // Start watching for changes
-const watcher = chokidar.watch(dir2watch, {ignored: /^\./, persistent: true, ignoreInitial: true});
+const watcher = chokidar.watch(dir2watch, {
+	ignored: /(^|[\/\\])\../, // ignore dotfiles
+	persistent: true,
+	ignoreInitial: true
+});
 
 console.log(chalk.yellowBright(`Monitoring ${dir2watch} for changes\n`));
 
