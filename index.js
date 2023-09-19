@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 import chokidar from 'chokidar';
-import { copyFileSync, lstatSync, mkdirSync, rmdirSync } from 'fs';
+import { copyFileSync, lstatSync, mkdirSync, rmdirSync, unlinkSync } from 'fs';
 import { dirname, sep } from 'path';
 import ora from 'ora';
 
