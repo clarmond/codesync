@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 import chokidar from 'chokidar';
-import { copyFileSync, existsSync, lstatSync, mkdirSync, readFileSync, rmdirSync, unlink, unlinkSync } from 'fs';
+import { copyFile, existsSync, lstatSync, mkdirSync, readFileSync, rmdirSync, unlink, unlinkSync } from 'fs';
 import ignore from 'ignore';
 import { basename, dirname, sep } from 'path';
 import ora from 'ora';
@@ -67,16 +67,18 @@ const syncPath = async (src, action) => {
 		try {
 			if (isDirectory(src)) {
 				mkdirSync(dst, { recursive: true});
-			} else {
-				mkdirSync(dstDir, { recursive: true});
-				await copyFileSync(src, dst);
+				spinner.succeed(`${relativePath} copied ${new Date()}`);
+				return;
 			}
-			spinner.succeed(`${relativePath} copied ${new Date()}`);
-			// Remove hidden files created by Mac
-			const hiddenFile = `${dstDir}${sep}._${basename(dst)}`;
-			setTimeout(() => {
-				unlink(hiddenFile, () => {})
-			}, 1000);
+			mkdirSync(dstDir, { recursive: true});
+			copyFile(src, dst, 0, () => {
+				spinner.succeed(`${relativePath} copied ${new Date()}`);
+				// Remove hidden files created by Mac
+				const hiddenFile = `${dstDir}${sep}._${basename(dst)}`;
+				setTimeout(() => {
+					unlink(hiddenFile, () => {})
+				}, 1000);
+			});
 		} catch (e) {
 			spinner.fail(`${relativePath} failed to copy`);
 			console.log(e)
