@@ -24,6 +24,14 @@ For example:
 
 `npm start /Users/abradley/tron /Volumes/tron`
 
+## Ignore Files
+You can create a list of files to be ignored by CodeSync by creating a `.csignore` file.  (Dot files are excluded automatically.) This file follows the [.gitignore spec](https://git-scm.com/docs/gitignore).  For example:
+
+```
+node_modules/
+README.md
+```
+
 ## Notes
 This is a _one-way_ sync.  Changes made on the target folder will _not_ be reflected back on the source folder.
 

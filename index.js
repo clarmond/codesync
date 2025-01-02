@@ -1,7 +1,8 @@
 import chalk from 'chalk';
 import chokidar from 'chokidar';
-import { copyFileSync, lstatSync, mkdirSync, rmdirSync, unlinkSync } from 'fs';
-import { dirname, sep } from 'path';
+import { copyFile, existsSync, lstatSync, mkdirSync, readFileSync, rmdirSync, unlink, unlinkSync } from 'fs';
+import ignore from 'ignore';
+import { basename, dirname, sep } from 'path';
 import ora from 'ora';
 
 /**
@@ -51,6 +52,11 @@ const syncPath = async (src, action) => {
 	const dst = src.replace(dir2watch, destdir);
 	const dstDir = dirname(dst);
 
+	if (ig.ignores(relativePath)) {
+		console.log(chalk.cyanBright(`Ignoring ${relativePath}`));
+		return;
+	}
+
 	if (action === 'copy') {
 		const spinner = ora({
 			text: `Updating ${relativePath}...`,
@@ -61,11 +67,18 @@ const syncPath = async (src, action) => {
 		try {
 			if (isDirectory(src)) {
 				mkdirSync(dst, { recursive: true});
-			} else {
-				mkdirSync(dstDir, { recursive: true});
-				await copyFileSync(src, dst);
+				spinner.succeed(`${relativePath} copied ${new Date()}`);
+				return;
 			}
-			spinner.succeed(`${relativePath} copied ${new Date()}`);
+			mkdirSync(dstDir, { recursive: true});
+			copyFile(src, dst, 0, () => {
+				spinner.succeed(`${relativePath} copied ${new Date()}`);
+				// Remove hidden files created by Mac
+				const hiddenFile = `${dstDir}${sep}._${basename(dst)}`;
+				setTimeout(() => {
+					unlink(hiddenFile, () => {})
+				}, 1000);
+			});
 		} catch (e) {
 			spinner.fail(`${relativePath} failed to copy`);
 			console.log(e)
@@ -91,8 +104,6 @@ const syncPath = async (src, action) => {
 		}
 	}
 }
-
-// console.clear();
 
 // Check for valid arguments.  Print syntax if necessary.
 if (process.argv.length < 4) {
@@ -127,11 +138,17 @@ const watcher = chokidar.watch(dir2watch, {
 
 console.log(chalk.yellowBright(`Monitoring ${dir2watch} for changes\n`));
 
+const ig = ignore();
+const ignoreFile = `${dir2watch}/.csignore`;
+if (existsSync(ignoreFile)) {
+	const fileData = readFileSync(ignoreFile).toString();
+	ig.add(fileData.split(/\n/));
+}
+
 watcher
 	.on('add', (path) => syncPath(path, 'copy'))
 	.on('addDir', (path) => syncPath(path, 'copy'))
 	.on('change', (path) => syncPath(path, 'copy'))
 	.on('unlink', (path) => syncPath(path, 'delete'))
 	.on('unlinkDir', (path) => syncPath(path, 'delete'))
-	.on('error', (error) => console.error(chalk.redBright('An error occurred:'), error))
-
+	.on('error', (error) => console.error(chalk.redBright('An error occurred:'), error));
