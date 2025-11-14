@@ -60,7 +60,7 @@ const syncPath = async (src, action) => {
 	if (action === 'copy') {
 		const spinner = ora({
 			text: `Updating ${relativePath}...`,
-			color: 'green',
+			color: 'yellow',
 			spinner: 'circleHalves',
 			interval: 200,
 		}).start();
@@ -87,7 +87,7 @@ const syncPath = async (src, action) => {
 	if (action === 'delete') {
 		const spinner = ora({
 			text: `Removing ${relativePath}...`,
-			color: 'green',
+			color: 'yellow',
 			spinner: 'circleHalves',
 			interval: 200,
 		}).start();
