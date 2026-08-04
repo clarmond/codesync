@@ -54,3 +54,11 @@ Go cross-compiles without extra tooling. For example, to build a Windows binary 
 ```
 GOOS=windows GOARCH=amd64 go build -o codesync.exe .
 ```
+
+To build binaries for macOS (Intel and Apple Silicon), Windows, and Linux all at once, run:
+
+```
+./build.sh
+```
+
+Binaries are written to `./bin`.
